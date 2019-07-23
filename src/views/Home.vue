@@ -1,7 +1,33 @@
 <template>
   <div class="home">
-    <button @click="load">LOAD</button>
+    <button @click="load">Load Players</button>
+
     <hr />
+
+    <h1>Select players</h1>
+    <p>
+      (There are <b>{{ playerNames.length }}</b> players total)
+    </p>
+    <div class="player-select-wrapper">
+      <div
+        class="player-wrapper"
+        v-for="playerName in playerNames"
+        :key="playerName"
+      >
+        <input
+          type="checkbox"
+          :id="playerName"
+          :value="playerName"
+          v-model="checkedNames"
+        />
+        <label for="playerName">{{ playerName }}</label>
+      </div>
+    </div>
+    <br />
+    <span>Отмеченные имена: {{ checkedNames }}</span>
+
+    <hr />
+
     <ul v-for="(row, index) in dataset" :key="`r${index}`">
       {{
         row.toString()
@@ -19,7 +45,19 @@ export default {
 
   data: function() {
     return {
-      dataset: []
+      dataset: [],
+      checkedNames: []
+    }
+  },
+
+  computed: {
+    playerNames: () => {
+      let names = []
+      for (let record of dataJSON) {
+        // names.push(Object.keys(record)[0])
+        names = [...names, Object.keys(record)[0]]
+      }
+      return names
     }
   },
 
@@ -58,5 +96,20 @@ export default {
 <style lang="scss">
 button {
   margin: 20px;
+}
+.player-select-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+
+  width: 100%;
+}
+.player-wrapper {
+  display: flex;
+  flex-direction: row;
+
+  width: fit-content;
+  padding: 8px;
+  margin: 6px;
+  border: 1px solid #5a5a5a;
 }
 </style>

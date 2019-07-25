@@ -1,13 +1,6 @@
 <template>
   <div class="home">
-    <button @click="load">Load Players</button>
-
-    <hr />
-
-    <h1>Select players</h1>
-    <p>
-      (There are <b>{{ playerNames.length }}</b> players total)
-    </p>
+    <h2>Выбери игроков (всего {{ playerNames.length }})</h2>
     <div class="player-select-wrapper">
       <div
         class="player-wrapper"
@@ -23,11 +16,15 @@
         <label for="playerName">{{ playerName }}</label>
       </div>
     </div>
-    <br />
-    <span>Отмеченные имена: {{ checkedNames }}</span>
 
     <hr />
 
+    <h2>Выбранные игроки</h2>
+    {{ checkedNames }}
+
+    <hr />
+
+    <h2>Статистика всех игроков</h2>
     <ul v-for="(row, index) in dataset" :key="`r${index}`">
       {{
         row.toString()
@@ -54,15 +51,14 @@ export default {
     playerNames: () => {
       let names = []
       for (let record of dataJSON) {
-        // names.push(Object.keys(record)[0])
-        names = [...names, Object.keys(record)[0]]
+        names.push(Object.keys(record)[0])
       }
       return names
     }
   },
 
   methods: {
-    load() {
+    loadPlayers() {
       this.dataset = [] // reset
 
       for (let record of dataJSON) {
@@ -89,6 +85,10 @@ export default {
         }
       })
     }
+  },
+
+  created() {
+    this.loadPlayers()
   }
 }
 </script>

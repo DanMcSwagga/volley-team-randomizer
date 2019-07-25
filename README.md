@@ -18,7 +18,8 @@ __________
 
 # Demo
 
- - [Main demo](https://s08k3.codesandbox.io/)
+ <!-- - [Main demo](https://s08k3.codesandbox.io/) -->
+ <b>Main demo</b> (currently unavailable)
 
 # Version
 

@@ -1,6 +1,10 @@
 <template>
   <div class="home">
     <h2>Выбери игроков (всего {{ playerNames.length }})</h2>
+    <h3>
+      Кол-во игроков за команду:
+      <input v-model="playerPerTeam" />
+    </h3>
     <!-- PlayerSelect component -->
     <div class="player-select-wrapper">
       <div
@@ -23,14 +27,12 @@
     <h2>Выбранные игроки</h2>
     {{ checkedNames }}
 
-    <hr />
-
-    <h2>Статистика всех игроков</h2>
-    <ul v-for="(row, index) in players" :key="`r${index}`">
+    <!-- <h2>Статистика всех игроков</h2> -->
+    <!-- <ul v-for="(row, index) in players" :key="`r${index}`">
       {{
         row.toString()
       }}
-    </ul>
+    </ul> -->
 
     <hr />
 
@@ -62,7 +64,9 @@ export default {
     players: [],
     teams: [],
     avgs: [], // TODO: remove (?)
-    checkedNames: []
+    checkedNames: [],
+
+    playerPerTeam: 4
   }),
 
   computed: {
@@ -144,6 +148,7 @@ export default {
       let lambda = 1 // use later
       let averages = this.getAllAverages()
 
+      // let PLAYER_PER_TEAM = this.playerPerTeam // 4
       const PLAYER_PER_TEAM = 4
 
       let players = this.getCurrentPlayers(this.players),
@@ -188,7 +193,7 @@ export default {
     getCurrentPlayers(allPlayers) {
       return shuffle(
         allPlayers.filter(
-          pl => this.playerNames.indexOf(pl.name) !== -1 // TODO: checkedNames
+          pl => this.checkedNames.indexOf(pl.name) !== -1 // TODO: playerNames
         )
       )
     },

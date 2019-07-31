@@ -9,7 +9,6 @@
 .app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   text-align: center;
-  margin: 0 10%;
-  // width: 100vw;
+  // margin: 0 5%;
 }
 </style>

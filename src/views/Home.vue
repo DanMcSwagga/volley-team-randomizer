@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <h2>Выбери игроков (всего {{ playerNames.length }})</h2>
+    <!-- PlayerSelect component -->
     <div class="player-select-wrapper">
       <div
         class="player-select"
@@ -19,32 +20,28 @@
 
     <hr />
 
-    <button @click="avgs = getAllAverages()">getAverages</button>
-    <span>{{ avgs }}</span>
-    <hr />
-
     <h2>Выбранные игроки</h2>
     {{ checkedNames }}
 
     <hr />
 
-    <h2>Статистика всех игроков</h2>
+    <!-- <h2>Статистика всех игроков</h2>
     <ul v-for="(row, index) in players" :key="`r${index}`">
-      {{
-        row.toString()
-      }}
+      {{ row.toString() }}
     </ul>
 
-    <hr />
+    <hr /> -->
 
     <h2>Сформированные команды</h2>
     <button @click="formTeams">Сформировать</button>
+    <button @click="getCurrentPlayers(players)">Текущие</button>
     <div class="team-wrapper">
-      <ul class="team" v-for="(team, index) in teams" :key="`t${index}`">
-        <h3 class="team-title">Team {{ index + 1 }}</h3>
-        <!-- {{ team.toString() }} -->
-        <li class="player" v-for="(player, index) in team" :key="`p${index}`">
-          {{ player.toString() }}
+      <!-- TeamCard component -->
+      <ul class="team" v-for="(team, tindex) in teams" :key="`t${tindex}`">
+        <h3 class="team-title">Команда {{ tindex + 1 }}</h3>
+        <li class="player" v-for="(player, pindex) in team" :key="`p${pindex}`">
+          <!-- {{ player.toString() }} -->
+          {{ player.name }}
         </li>
       </ul>
     </div>
@@ -54,20 +51,17 @@
 <script>
 import Player from '@/utils/Player.js'
 import dataJSON from '@/utils/data.json'
-
-const PLAYER_PER_TEAM = 4
+import { shuffle, average } from '@/utils/utils.js'
 
 export default {
   name: 'home',
 
-  data: function() {
-    return {
-      players: [],
-      teams: [],
-      avgs: [], // TODO: remove (?)
-      checkedNames: []
-    }
-  },
+  data: () => ({
+    players: [],
+    teams: [],
+    avgs: [], // TODO: remove (?)
+    checkedNames: []
+  }),
 
   computed: {
     playerNames: () => {
@@ -108,11 +102,11 @@ export default {
 
       // TODO: toFixed on all values (???)
       return {
-        att: this.average(averages.map(arr => arr[0])),
-        def: this.average(averages.map(arr => arr[1])),
-        com: this.average(averages.map(arr => arr[2])),
-        tac: this.average(averages.map(arr => arr[3])),
-        sta: this.average(averages.map(arr => arr[4]))
+        att: average(averages.map(arr => arr[0])),
+        def: average(averages.map(arr => arr[1])),
+        com: average(averages.map(arr => arr[2])),
+        tac: average(averages.map(arr => arr[3])),
+        sta: average(averages.map(arr => arr[4]))
       }
     },
 
@@ -140,20 +134,20 @@ export default {
     
     take players best suited to fill out empty spaces
       and add them to not fully formed teams
-
     */
 
     formTeams() {
       console.log('Forming...')
-      // let lambda = 1 // use later
+      // ~ Preparations ~
+      let lambda = 1 // use later
+      let averages = this.getAllAverages()
 
-      // Preparations
-      let players = this.players
-      let numOfTeams = Math.ceil(players.length / PLAYER_PER_TEAM) // needed ?
-      this.teams.length = numOfTeams
-      for (let i = 0; i < numOfTeams; i++) this.teams[i] = []
-      debugger
-      let averages = this.getAllAverages(averages)
+      const PLAYER_PER_TEAM = 4
+
+      let players = this.getCurrentPlayers(this.players),
+        numOfTeams = Math.ceil(players.length / PLAYER_PER_TEAM),
+        teams = new Array(numOfTeams)
+      for (let i = 0; i < numOfTeams; i++) teams[i] = []
 
       let ti = 0, // team iterator
         pi // player iterator
@@ -161,22 +155,43 @@ export default {
       // ~ Algorithm ~
 
       while (players.length !== 0) {
-        // Reset player iterator
+        // Reset current player iterator
         pi = 0
 
         // If team is formed...
-        if (this.teams[ti].length === PLAYER_PER_TEAM) {
+        if (teams[ti].length === PLAYER_PER_TEAM) {
           // Go to next team
           ti++
         }
 
-        // TODO: PERFORM CHECKS WITH THE CURRENT PLAYER (via [pi])
+        // TODO: Perform checks with current player
+        console.log(players[pi])
+        // while (pi < players.length) {
+        // ...
+        // }
+        // change lambda here ?
 
         // Fill team with player
-        this.teams[ti].push(players.splice(pi, 1))
+        teams[ti].push(players.splice(pi, 1)[0])
       }
+
+      // Add extra average players to finish forming teams
+
+      debugger
+
+      this.teams = teams
+      // or this.$forceUpdate()
     },
 
+    getCurrentPlayers(allPlayers) {
+      return shuffle(
+        allPlayers.filter(
+          pl => this.playerNames.indexOf(pl.name) !== -1 // TODO: checkedNames
+        )
+      )
+    },
+
+    // Needed ?
     applyCoef(pl) {
       pl.att *= 3
       pl.def *= 3
@@ -184,28 +199,6 @@ export default {
       pl.tac *= 1.5
       pl.sta *= 1.5
       return pl
-    },
-
-    average: arr => arr.reduce((a, b) => a + b, 0) / arr.length,
-
-    shuffle(array) {
-      let i = array.length,
-        temp,
-        j
-
-      console.log('Shuffling...')
-      // While there remain elements to shuffle…
-      while (i) {
-        // Pick a remaining element…
-        j = Math.floor(Math.random() * i--)
-
-        // And swap it with the current element.
-        temp = array[i]
-        array[i] = array[j]
-        array[j] = temp
-      }
-
-      return array
     },
 
     outputPlayers(players) {
@@ -227,7 +220,6 @@ button {
   display: flex;
   flex-wrap: wrap;
 
-  width: 100%;
   margin: 0 40px;
 }
 .player-select {

@@ -25,12 +25,14 @@
 
     <hr />
 
-    <!-- <h2>Статистика всех игроков</h2>
+    <h2>Статистика всех игроков</h2>
     <ul v-for="(row, index) in players" :key="`r${index}`">
-      {{ row.toString() }}
+      {{
+        row.toString()
+      }}
     </ul>
 
-    <hr /> -->
+    <hr />
 
     <h2>Сформированные команды</h2>
     <button @click="formTeams">Сформировать</button>

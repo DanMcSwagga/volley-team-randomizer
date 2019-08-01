@@ -22,10 +22,12 @@
       </div>
     </div>
 
-    <hr />
+    <!-- <hr /> -->
 
-    <h2>Выбранные игроки</h2>
-    {{ checkedNames }}
+    <!-- <h2>Выбранные игроки</h2> -->
+    <!-- {{ checkedNames }} -->
+
+    <!-- <hr /> -->
 
     <!-- <h2>Статистика всех игроков</h2> -->
     <!-- <ul v-for="(row, index) in players" :key="`r${index}`">
@@ -120,7 +122,7 @@ export default {
     getCurrentPlayers(allPlayers) {
       return shuffle(
         allPlayers.filter(
-          pl => this.playerNames.indexOf(pl.name) !== -1 // TODO: checkedNames
+          pl => this.checkedNames.indexOf(pl.name) !== -1 // TODO: playerNames
         )
       )
     },
@@ -131,7 +133,7 @@ export default {
       this.lambda = 2
 
       let averages = this.getAllAverages()
-      let scoreAverage = this.formScore(averages) // sum(Object.values(avgs))
+      let scoreAverage = this.formScore(averages)
 
       let players = this.getCurrentPlayers(this.players)
       let numOfTeams = Math.ceil(players.length / this.playerPerTeam)

@@ -68,7 +68,7 @@ import dataJSON from '@/utils/data.json'
 import { shuffle, average, sum, passWithout } from '@/utils/utils.js'
 
 const ATT_MIN = 4 // < than lowest possible attribute score
-const ATT_MULT = [3, 3, 1, 2, 1] // attribute multipliers
+const ATT_MULT = [4, 4, 1, 2, 1] // attribute multipliers
 
 export default {
   name: 'home',
@@ -79,7 +79,7 @@ export default {
     checkedNames: [],
     playerPerTeam: 4,
 
-    lambda: 2
+    lambda: 1
   }),
 
   computed: {
@@ -133,7 +133,7 @@ export default {
     formTeams() {
       console.log('Forming...')
       // ~ Preparations ~
-      this.lambda = 2
+      this.lambda = 1
 
       let players = this.getCurrentPlayers(this.players)
       let numOfTeams = Math.ceil(players.length / this.playerPerTeam)
@@ -166,7 +166,7 @@ export default {
 
             // If there are no players left
             if (pi === players.length) {
-              this.lambda *= 2 // Increase lambda - allowance error
+              this.lambda += 1 // Increase lambda - allowance error | *= 2
               pi = 0 // Reset current player iterator
             }
           } else {

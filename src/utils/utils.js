@@ -19,4 +19,12 @@ let shuffle = function(array) {
 
 let average = arr => arr.reduce((a, b) => a + b, 0) / arr.length
 
-export { shuffle, average }
+let sum = arr => arr.reduce((a, b) => a + b, 0)
+
+let passWithout = (obj, key) => {
+  // eslint-disable-next-line no-unused-vars
+  const { [key]: deletedKey, ...otherKeys } = obj
+  return otherKeys
+}
+
+export { shuffle, average, sum, passWithout }

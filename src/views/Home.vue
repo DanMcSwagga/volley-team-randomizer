@@ -3,7 +3,7 @@
     <h2>Выбери игроков (всего {{ playerNames.length }})</h2>
     <h3>
       Кол-во игроков за команду:
-      <input v-model="playerPerTeam" />
+      <input v-model.number="playerPerTeam" type="number" />
     </h3>
     <!-- PlayerSelect component -->
     <div class="player-select-wrapper">
@@ -146,13 +146,10 @@ export default {
       console.log('Forming...')
       // ~ Preparations ~
       let lambda = 1 // use later
-      let averages = this.getAllAverages()
-
-      // let PLAYER_PER_TEAM = this.playerPerTeam // 4
-      const PLAYER_PER_TEAM = 4
+      let averages = this.getAllAverages() // Needed ?
 
       let players = this.getCurrentPlayers(this.players),
-        numOfTeams = Math.ceil(players.length / PLAYER_PER_TEAM),
+        numOfTeams = Math.ceil(players.length / this.playerPerTeam),
         teams = new Array(numOfTeams)
       for (let i = 0; i < numOfTeams; i++) teams[i] = []
 
@@ -160,13 +157,12 @@ export default {
         pi // player iterator
 
       // ~ Algorithm ~
-
       while (players.length !== 0) {
         // Reset current player iterator
         pi = 0
 
         // If team is formed...
-        if (teams[ti].length === PLAYER_PER_TEAM) {
+        if (teams[ti].length === this.playerPerTeam) {
           // Go to next team
           ti++
         }
@@ -182,9 +178,7 @@ export default {
         teams[ti].push(players.splice(pi, 1)[0])
       }
 
-      // Add extra average players to finish forming teams
-
-      debugger
+      // Add extra, average players to finish forming teams
 
       this.teams = teams
       // or this.$forceUpdate()
@@ -193,7 +187,7 @@ export default {
     getCurrentPlayers(allPlayers) {
       return shuffle(
         allPlayers.filter(
-          pl => this.checkedNames.indexOf(pl.name) !== -1 // TODO: playerNames
+          pl => this.playerNames.indexOf(pl.name) !== -1 // TODO: checkedNames
         )
       )
     },

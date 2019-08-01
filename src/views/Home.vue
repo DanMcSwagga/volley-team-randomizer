@@ -45,7 +45,10 @@
       <!-- TeamCard component -->
       <ul class="team" v-for="(team, tindex) in teams" :key="`t${tindex}`">
         <h3 class="team-title">Команда {{ tindex + 1 }}</h3>
-        <h3>{{ team.score }}</h3>
+        <h3>
+          {{ team.score.toFixed(2) }} >
+          {{ (team.score / team.players.length).toFixed(2) }}
+        </h3>
         <li
           class="player"
           v-for="(player, pindex) in team.players"
@@ -122,7 +125,7 @@ export default {
     getCurrentPlayers(allPlayers) {
       return shuffle(
         allPlayers.filter(
-          pl => this.checkedNames.indexOf(pl.name) !== -1 // TODO: playerNames
+          pl => this.checkedNames.indexOf(pl.name) !== -1 // TODO: playerNames | checkedNames
         )
       )
     },
@@ -132,9 +135,6 @@ export default {
       // ~ Preparations ~
       this.lambda = 2
 
-      let averages = this.getAllAverages()
-      let scoreAverage = this.formScore(averages)
-
       let players = this.getCurrentPlayers(this.players)
       let numOfTeams = Math.ceil(players.length / this.playerPerTeam)
       let teams = new Array(numOfTeams)
@@ -142,6 +142,9 @@ export default {
 
       let ti = 0, // team iterator
         pi = 0 // player iterator
+
+      let averages = this.getAllAverages(players)
+      let scoreAverage = this.formScore(averages)
 
       console.log('AVERAGE = ' + scoreAverage)
       // ~ Algorithm ~
@@ -202,9 +205,9 @@ export default {
 
     teamDiff: (team, avg) => team.score / team.players.length - avg,
 
-    getAllAverages() {
+    getAllAverages(players) {
       // TODO: think of a way to utilize passWithout()
-      let averages = this.players.map(pl => [
+      let averages = players.map(pl => [
         Number.parseFloat(pl.att),
         Number.parseFloat(pl.def),
         Number.parseFloat(pl.com),

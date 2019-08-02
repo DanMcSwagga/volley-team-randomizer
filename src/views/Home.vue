@@ -54,8 +54,8 @@
           v-for="(player, pindex) in team.players"
           :key="`p${pindex}`"
         >
-          <!-- {{ player.toString() }} -->
-          {{ player.name }}
+          {{ player.toString() }}
+          <!-- {{ player.name }} -->
         </li>
       </ul>
     </div>
@@ -125,7 +125,7 @@ export default {
     getCurrentPlayers(allPlayers) {
       return shuffle(
         allPlayers.filter(
-          pl => this.checkedNames.indexOf(pl.name) !== -1 // TODO: playerNames | checkedNames
+          pl => this.playerNames.indexOf(pl.name) !== -1 // TODO: playerNames | checkedNames
         )
       )
     },
@@ -146,6 +146,8 @@ export default {
       let averages = this.getAllAverages(players)
       let scoreAverage = this.formScore(averages)
 
+      let extraPlayerRemovalFlag = false // N-1th player check
+
       console.log('AVERAGE = ' + scoreAverage)
       // ~ Algorithm ~
       while (players.length !== 0) {
@@ -156,17 +158,34 @@ export default {
         teams[ti].players.push(players.splice(pi, 1)[0])
         teams[ti].score += scorePlayer
 
+        // debugger
+
+        // TODO: reformat to: handleFormedTeam(...)
+        // and use some recursive function
+        // to get rid of players in a team until the first member
+        // so that we eliminate the need of multiple formTeam presses
+        // + change extraPlayerRemovalFlag to stack-array of T/f (?)
+        // + use same function later to fill the last unformed team
+
         // If team is formed...
         if (teams[ti].players.length === this.playerPerTeam) {
           // If team average doesn't fit lambda
           if (this.teamDiff(teams[ti], scoreAverage) > this.lambda) {
-            players.unshift(teams[ti].players.pop()) // Remove last player...
-            teams[ti].score -= scorePlayer // and score
+            players.unshift(teams[ti].players.pop()) // Remove Nth player to start
+            teams[ti].score -= scorePlayer // Remove score
             pi++ // Then try next player
 
-            // If there are no players left
+            // If there are no players left...
             if (pi === players.length) {
-              this.lambda += 1 // Increase lambda - allowance error | *= 2
+              // If already tried removing N-1th player from team...
+              if (extraPlayerRemovalFlag) {
+                this.lambda += 1 // Increase lambda - allowance error | *= 2
+                extraPlayerRemovalFlag = false // Reset N-1th player check
+              } else {
+                players.push(teams[ti].players.pop()) // Remove N-1th player to end
+                teams[ti].score -= scorePlayer // Remove score
+                extraPlayerRemovalFlag = true // Set flag to know when N-1th was removed
+              }
               pi = 0 // Reset current player iterator
             }
           } else {
@@ -174,25 +193,6 @@ export default {
             pi = 0 // Reset current player iterator
           }
         }
-
-        // if (fitsLambda(diff, lambda)) {
-        //   // Fill team with player, increase team's score
-        //   teams[ti].players.push(players.splice(pi, 1)[0])
-        //   teams[ti].score += scorePlayer
-        //   // Reset current player iterator
-        //   pi = 0
-        // } else {
-        //   // If there are no players left
-        //   if (pi >= players.length) {
-        //     // Increase lambda - allowance error
-        //     lambda *= 2
-        //     // Reset current player iterator
-        //     pi = 0
-        //   } else {
-        //     // Try next player
-        //     pi++
-        //   }
-        // }
       }
 
       // Add extra, average players to finish forming teams
@@ -203,7 +203,7 @@ export default {
       debugger
     },
 
-    teamDiff: (team, avg) => team.score / team.players.length - avg,
+    teamDiff: (team, avg) => Math.abs(team.score / team.players.length - avg),
 
     getAllAverages(players) {
       // TODO: think of a way to utilize passWithout()

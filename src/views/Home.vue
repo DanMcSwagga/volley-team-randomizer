@@ -54,8 +54,8 @@
           v-for="(player, pindex) in team.players"
           :key="`p${pindex}`"
         >
-          {{ player.toString() }}
-          <!-- {{ player.name }} -->
+          <!-- {{ player.toString() }} -->
+          {{ player.name }}
         </li>
       </ul>
     </div>
@@ -68,7 +68,7 @@ import dataJSON from '@/utils/data.json'
 import { shuffle, average, sum, passWithout } from '@/utils/utils.js'
 
 const ATT_MIN = 4 // < than lowest possible attribute score
-const ATT_MULT = [4, 4, 1, 2, 1] // attribute multipliers
+const ATT_MULT = [3, 3, 1, 2, 1] // attribute multipliers
 
 export default {
   name: 'home',
@@ -125,7 +125,7 @@ export default {
     getCurrentPlayers(allPlayers) {
       return shuffle(
         allPlayers.filter(
-          pl => this.playerNames.indexOf(pl.name) !== -1 // TODO: playerNames | checkedNames
+          pl => this.checkedNames.indexOf(pl.name) !== -1 // TODO: playerNames | checkedNames
         )
       )
     },
@@ -154,7 +154,7 @@ export default {
         let scorePlayer = this.formScore(passWithout(players[pi], 'name'))
         console.log(players[pi].name + ' = ' + scorePlayer)
 
-        // Add player to team, increase team's score
+        // Add player to team, increase team score
         teams[ti].players.push(players.splice(pi, 1)[0])
         teams[ti].score += scorePlayer
 
@@ -199,8 +199,6 @@ export default {
 
       this.teams = teams
       // or this.$forceUpdate()
-
-      debugger
     },
 
     teamDiff: (team, avg) => Math.abs(team.score / team.players.length - avg),

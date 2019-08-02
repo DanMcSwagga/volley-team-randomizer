@@ -68,7 +68,7 @@ import dataJSON from '@/utils/data.json'
 import { shuffle, average, sum, passWithout } from '@/utils/utils.js'
 
 const ATT_MIN = 4 // < than lowest possible attribute score
-const ATT_MULT = [3, 3, 1, 2, 1] // attribute multipliers
+const ATT_MULT = [4, 4, 1, 3, 2] // attribute multipliers
 
 export default {
   name: 'home',

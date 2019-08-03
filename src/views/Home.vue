@@ -39,8 +39,16 @@
     <hr />
 
     <h2>Сформированные команды</h2>
-    <span>Точность: {{ lambda }}</span>
+    <span>
+      <b>Точность: {{ lambda }}</b>
+    </span>
     <button @click="formTeams">Сформировать</button>
+    <p>
+      <i>
+        Точность формулирования команд (1 отлично, 2-3 хорошо, 4+ плохо)
+      </i>
+    </p>
+
     <div class="team-wrapper">
       <!-- TeamCard component -->
       <ul class="team" v-for="(team, tindex) in teams" :key="`t${tindex}`">
@@ -54,8 +62,7 @@
           v-for="(player, pindex) in team.players"
           :key="`p${pindex}`"
         >
-          <!-- {{ player.toString() }} -->
-          {{ player.name }}
+          {{ DEV_MODE ? player.toString() : player.name }}
         </li>
       </ul>
     </div>
@@ -65,10 +72,12 @@
 <script>
 import Player from '@/utils/Player.js'
 import dataJSON from '@/utils/data.json'
+import dummies from '@/utils/dummies.json'
 import { shuffle, average, sum, passWithout } from '@/utils/utils.js'
 
 const ATT_MIN = 4 // < than lowest possible attribute score
 const ATT_MULT = [4, 4, 1, 3, 2] // attribute multipliers
+const DUMMY = true // condition to include dummies
 
 export default {
   name: 'home',
@@ -78,21 +87,38 @@ export default {
     teams: [],
     checkedNames: [],
     playerPerTeam: 4,
+    lambda: 1, // allowance error
 
-    lambda: 1
+    DEV_MODE: false // mode for development
   }),
 
   computed: {
     playerNames: () => {
       let names = []
       for (let record of dataJSON) {
-        names.push(Object.keys(record)[0])
+        names.push(Object.keys(record)[0]) // adding actual players
       }
+      if (DUMMY)
+        for (let dummy of dummies) {
+          names.push(dummy['name']) // adding dummies
+        }
       return names
     }
   },
 
   methods: {
+    loadData(url, callback) {
+      this.$papa.parse(url, {
+        download: true,
+        skipEmptyLines: 'greedy',
+        delimiter: ',',
+        dynamicTyping: 'true',
+        complete: function(results) {
+          callback(results)
+        }
+      })
+    },
+
     loadPlayers() {
       this.players = [] // reset
 
@@ -107,31 +133,29 @@ export default {
         })
       }
 
-      console.log(this.players)
+      if (DUMMY) this.addDummies()
     },
 
-    loadData(url, callback) {
-      this.$papa.parse(url, {
-        download: true,
-        skipEmptyLines: 'greedy',
-        delimiter: ',',
-        dynamicTyping: 'true',
-        complete: function(results) {
-          callback(results)
-        }
-      })
+    addDummies() {
+      for (let dummy of dummies) {
+        let pl = new Player('', 0, 0, 0, 0, 0)
+        Object.assign(pl, dummy)
+        this.players.push(pl)
+      }
     },
 
     getCurrentPlayers(allPlayers) {
       return shuffle(
-        allPlayers.filter(
-          pl => this.checkedNames.indexOf(pl.name) !== -1 // TODO: playerNames | checkedNames
+        allPlayers.filter(pl =>
+          this.DEV_MODE
+            ? this.playerNames
+            : this.checkedNames.indexOf(pl.name) !== -1
         )
       )
     },
 
     formTeams() {
-      console.log('Forming...')
+      console.log('Forming teams...')
       // ~ Preparations ~
       this.lambda = 1
 
@@ -251,7 +275,7 @@ export default {
 
 <style lang="scss">
 button {
-  margin: 20px;
+  margin: 10px 20px;
 }
 .player-select-wrapper {
   display: flex;

@@ -155,6 +155,8 @@ export default {
 
     formTeams() {
       console.log('Forming teams...')
+      if (this.checkEmptyPlayers()) return
+
       // ~ Preparations ~
       this.lambda = 1
 
@@ -255,15 +257,26 @@ export default {
             console.log('>> Team formed successfully')
             console.log(`>> Avg ${teams[ti].score / 4} | ${scoreAverage}`)
             pi = 0 // Reset current player iterator
-            break // ti++ // Go to next team
+            break // end
           }
         }
       }
 
-      // debugger
-
       this.teams = teams
       // or: this.$forceUpdate()
+    },
+
+    checkEmptyPlayers() {
+      const selected = this.checkedNames.length
+      const needed = this.playerPerTeam
+      if (selected < needed) {
+        alert(
+          `Выбрано ${selected} игроков.\n` +
+            `Отметьте хотя бы ${needed} игроков для формирования команд.`
+        )
+        return true
+      }
+      return false
     },
 
     teamDiff: (team, avg) => Math.abs(team.score / team.players.length - avg),

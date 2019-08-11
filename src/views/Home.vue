@@ -88,7 +88,7 @@ export default {
     playerPerTeam: 4,
     lambda: 1, // allowance error
 
-    DEV_MODE: true // mode for development
+    DEV_MODE: false // mode for development
   }),
 
   computed: {
@@ -155,7 +155,7 @@ export default {
 
     formTeams() {
       console.log('Forming teams...')
-      if (this.checkEmptyPlayers()) return
+      if (!this.DEV_MODE && this.checkEmptyPlayers()) return
 
       // ~ Preparations ~
       this.lambda = 1
@@ -220,44 +220,46 @@ export default {
         }
       }
 
-      // Remove already assigned players from copy-array
-      playersCopy.splice(
-        playersCopy.length - teams[ti].players.length,
-        teams[ti].players.length
-      )
-      pi = 0 // Reset current player iterator
-
       // Add extra, average players to finish forming teams
-      while (playersCopy.length !== 0) {
-        console.log(playersCopy[pi].name + ' = ' + playersCopy[pi].score)
+      if (players.length !== 0) {
+        // Remove already assigned players from copy-array
+        playersCopy.splice(
+          playersCopy.length - teams[ti].players.length,
+          teams[ti].players.length
+        )
+        pi = 0 // Reset current player iterator
 
-        // Add player to team, increase team score
-        teams[ti].addPlayer(playersCopy.splice(pi, 1)[0])
+        while (playersCopy.length !== 0) {
+          console.log(playersCopy[pi].name + ' = ' + playersCopy[pi].score)
 
-        // If team is formed...
-        if (teams[ti].players.length === this.playerPerTeam) {
-          // If team average doesn't fit lambda
-          if (this.teamDiff(teams[ti], scoreAverage) > this.lambda) {
-            playersCopy.unshift(teams[ti].removeLastPlayer()) // Remove Nth player to start
-            pi++ // Then try next player
+          // Add player to team, increase team score
+          teams[ti].addPlayer(playersCopy.splice(pi, 1)[0])
 
-            // If there are no players left...
-            if (pi === playersCopy.length) {
-              // If already tried removing N-1th player from team...
-              if (extraPlayerRemovalFlag) {
-                this.lambda += 1 // Increase lambda -- allowance error | *= 2
-                extraPlayerRemovalFlag = false // Reset N-1th player check
-              } else {
-                playersCopy.unshift(teams[ti].removeLastPlayer()) // Remove N-1th player to end
-                extraPlayerRemovalFlag = true // Set flag to know when N-1th was removed
+          // If team is formed...
+          if (teams[ti].players.length === this.playerPerTeam) {
+            // If team average doesn't fit lambda
+            if (this.teamDiff(teams[ti], scoreAverage) > this.lambda) {
+              playersCopy.unshift(teams[ti].removeLastPlayer()) // Remove Nth player to start
+              pi++ // Then try next player
+
+              // If there are no players left...
+              if (pi === playersCopy.length) {
+                // If already tried removing N-1th player from team...
+                if (extraPlayerRemovalFlag) {
+                  this.lambda += 1 // Increase lambda -- allowance error | *= 2
+                  extraPlayerRemovalFlag = false // Reset N-1th player check
+                } else {
+                  playersCopy.unshift(teams[ti].removeLastPlayer()) // Remove N-1th player to end
+                  extraPlayerRemovalFlag = true // Set flag to know when N-1th was removed
+                }
+                pi = 0 // Reset current player iterator
               }
+            } else {
+              console.log('>> Team formed successfully')
+              console.log(`>> Avg ${teams[ti].score / 4} | ${scoreAverage}`)
               pi = 0 // Reset current player iterator
+              break // end
             }
-          } else {
-            console.log('>> Team formed successfully')
-            console.log(`>> Avg ${teams[ti].score / 4} | ${scoreAverage}`)
-            pi = 0 // Reset current player iterator
-            break // end
           }
         }
       }

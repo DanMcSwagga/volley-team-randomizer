@@ -1,5 +1,9 @@
 <template>
   <div class="home">
+    <WeatherWidget />
+
+    <hr />
+
     <h2>Выбери игроков (всего {{ playerNames.length }})</h2>
     <h3>
       Кол-во игроков за команду:
@@ -21,20 +25,6 @@
         <label for="playerName">{{ playerName }}</label>
       </div>
     </div>
-
-    <!-- <hr /> -->
-
-    <!-- <h2>Выбранные игроки</h2> -->
-    <!-- {{ checkedNames }} -->
-
-    <!-- <hr /> -->
-
-    <!-- <h2>Статистика всех игроков</h2> -->
-    <!-- <ul v-for="(row, index) in players" :key="`r${index}`">
-      {{
-        row.toString()
-      }}
-    </ul> -->
 
     <hr />
 
@@ -70,6 +60,8 @@
 </template>
 
 <script>
+import WeatherWidget from '@/components/WeatherWidget.vue'
+
 import Player from '@/utils/Player.js'
 import dataJSON from '@/utils/data.json'
 import dummies from '@/utils/dummies.json'
@@ -81,6 +73,10 @@ const DUMMY = true // condition to include dummies
 
 export default {
   name: 'home',
+
+  components: {
+    WeatherWidget
+  },
 
   data: () => ({
     players: [],

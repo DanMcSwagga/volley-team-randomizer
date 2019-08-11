@@ -6,8 +6,10 @@
 </template>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,700,900&display=swap&subset=cyrillic');
+
 .app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   text-align: center;
   // margin: 0 5%;
 }

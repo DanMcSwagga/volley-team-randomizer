@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <WeatherWidget />
+    <AppHeader />
 
     <hr />
 
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import WeatherWidget from '@/components/WeatherWidget.vue'
+import AppHeader from '@/components/AppHeader.vue'
 
 import Player from '@/utils/Player.js'
 import Team from '@/utils/Team.js'
@@ -78,7 +78,7 @@ export default {
   name: 'home',
 
   components: {
-    WeatherWidget
+    AppHeader
   },
 
   data: () => ({
@@ -221,12 +221,15 @@ export default {
       }
 
       // Add extra, average players to finish forming teams
-      if (players.length !== 0) {
+      if (playersCopy.length % this.playerPerTeam !== 0) {
         // Remove already assigned players from copy-array
         playersCopy.splice(
           playersCopy.length - teams[ti].players.length,
           teams[ti].players.length
         )
+        // And shuffle them
+        playersCopy = shuffle(playersCopy)
+
         pi = 0 // Reset current player iterator
 
         while (playersCopy.length !== 0) {

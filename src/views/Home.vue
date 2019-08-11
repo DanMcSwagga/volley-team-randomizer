@@ -5,11 +5,14 @@
     <hr />
 
     <h2>Выбери игроков (всего {{ playerNames.length }})</h2>
-    <h3 class="player-per-team-wrapper">
+
+    <div class="player-per-team-wrapper">
       <span>Кол-во игроков за команду:</span>
-      <input v-model.number="playerPerTeam" type="range" min="3" max="6" />
-      <span>{{ playerPerTeam }}</span>
-    </h3>
+      <div>
+        <input v-model.number="playerPerTeam" type="range" min="3" max="6" />
+        <span>{{ playerPerTeam }}</span>
+      </div>
+    </div>
     <!-- PlayerSelect component -->
     <div class="player-select-wrapper">
       <div
@@ -85,7 +88,7 @@ export default {
     playerPerTeam: 4,
     lambda: 1, // allowance error
 
-    DEV_MODE: false // mode for development
+    DEV_MODE: true // mode for development
   }),
 
   computed: {
@@ -302,9 +305,14 @@ button {
 .player-per-team-wrapper {
   display: flex;
   justify-content: center;
-
+  flex-wrap: wrap;
+  margin: 10px 0;
   span {
     margin: 0 5px;
+  }
+  div {
+    display: flex;
+    justify-content: center;
   }
 }
 .player-select-wrapper {

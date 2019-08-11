@@ -44,16 +44,15 @@
       <ul class="team" v-for="(team, tindex) in teams" :key="`t${tindex}`">
         <h3 class="team-title">Команда {{ tindex + 1 }}</h3>
         <h3>
-          {{ team.score.toFixed(2) }} >
+          {{ team.score.toFixed(2) }} /
           {{ (team.score / team.players.length).toFixed(2) }}
         </h3>
         <li
           class="player"
           v-for="(player, pindex) in team.players"
           :key="`p${pindex}`"
-        >
-          {{ DEV_MODE ? player.toString() : player.name }}
-        </li>
+          v-html="DEV_MODE ? player.toString() : player.name"
+        ></li>
       </ul>
     </div>
   </div>
@@ -63,12 +62,11 @@
 import WeatherWidget from '@/components/WeatherWidget.vue'
 
 import Player from '@/utils/Player.js'
+import Team from '@/utils/Team.js'
 import dataJSON from '@/utils/data.json'
 import dummies from '@/utils/dummies.json'
-import { shuffle, average, sum, passWithout } from '@/utils/utils.js'
+import { shuffle, average, getFormedScore } from '@/utils/utils.js'
 
-const ATT_MIN = 4 // < than lowest possible attribute score
-const ATT_MULT = [4, 4, 1, 3, 2] // attribute multipliers
 const DUMMY = true // condition to include dummies
 
 export default {
@@ -158,27 +156,26 @@ export default {
       let players = this.getCurrentPlayers(this.players)
       let numOfTeams = Math.ceil(players.length / this.playerPerTeam)
       let teams = new Array(numOfTeams)
-      for (let i = 0; i < numOfTeams; i++) teams[i] = { players: [], score: 0 }
+      for (let i = 0; i < numOfTeams; i++) teams[i] = new Team()
 
       let ti = 0, // team iterator
         pi = 0 // player iterator
 
       let averages = this.getAllAverages(players)
-      let scoreAverage = this.formScore(averages)
+      let scoreAverage = getFormedScore(averages)
 
       let extraPlayerRemovalFlag = false // N-1th player check
 
-      console.log('AVERAGE = ' + scoreAverage)
+      players.forEach(player => player.calculateScore())
+
+      console.log('>> Average score = ' + scoreAverage)
+
       // ~ Algorithm ~
       while (players.length !== 0) {
-        let scorePlayer = this.formScore(passWithout(players[pi], 'name'))
-        console.log(players[pi].name + ' = ' + scorePlayer)
+        console.log(players[pi].name + ' = ' + players[pi].score)
 
         // Add player to team, increase team score
-        teams[ti].players.push(players.splice(pi, 1)[0])
-        teams[ti].score += scorePlayer
-
-        // debugger
+        teams[ti].addPlayer(players.splice(pi, 1)[0])
 
         // TODO: reformat to: handleFormedTeam(...)
         // and use some recursive function
@@ -191,24 +188,24 @@ export default {
         if (teams[ti].players.length === this.playerPerTeam) {
           // If team average doesn't fit lambda
           if (this.teamDiff(teams[ti], scoreAverage) > this.lambda) {
-            players.unshift(teams[ti].players.pop()) // Remove Nth player to start
-            teams[ti].score -= scorePlayer // Remove score
+            players.unshift(teams[ti].removeLastPlayer()) // Remove Nth player to start
             pi++ // Then try next player
 
             // If there are no players left...
             if (pi === players.length) {
               // If already tried removing N-1th player from team...
               if (extraPlayerRemovalFlag) {
-                this.lambda += 1 // Increase lambda - allowance error | *= 2
+                this.lambda += 1 // Increase lambda -- allowance error | *= 2
                 extraPlayerRemovalFlag = false // Reset N-1th player check
               } else {
-                players.push(teams[ti].players.pop()) // Remove N-1th player to end
-                teams[ti].score -= scorePlayer // Remove score
+                players.unshift(teams[ti].removeLastPlayer()) // Remove N-1th player to end
                 extraPlayerRemovalFlag = true // Set flag to know when N-1th was removed
               }
               pi = 0 // Reset current player iterator
             }
           } else {
+            console.log('>> Team formed successfully')
+            console.log(`>> Avg ${teams[ti].score / 4} | ${scoreAverage}`)
             ti++ // Go to next team
             pi = 0 // Reset current player iterator
           }
@@ -218,7 +215,7 @@ export default {
       // Add extra, average players to finish forming teams
 
       this.teams = teams
-      // or this.$forceUpdate()
+      // or: this.$forceUpdate()
     },
 
     teamDiff: (team, avg) => Math.abs(team.score / team.players.length - avg),
@@ -240,22 +237,6 @@ export default {
         tac: average(averages.map(arr => arr[3])),
         sta: average(averages.map(arr => arr[4]))
       }
-    },
-
-    formScore(pl) {
-      this.adjustScore(pl)
-      return sum(Object.values(pl))
-    },
-
-    adjustScore(pl) {
-      // TODO: simplify code if possible ?
-      // for (let attr of Object.values(pl)) {}
-
-      pl.att = (pl.att - ATT_MIN) * ATT_MULT[0]
-      pl.def = (pl.def - ATT_MIN) * ATT_MULT[1]
-      pl.com = (pl.com - ATT_MIN) * ATT_MULT[2]
-      pl.tac = (pl.tac - ATT_MIN) * ATT_MULT[3]
-      pl.sta = (pl.sta - ATT_MIN) * ATT_MULT[4]
     },
 
     outputPlayers(players) {

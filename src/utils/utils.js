@@ -1,4 +1,6 @@
-let shuffle = function(array) {
+import { ATT_MIN, ATT_MULT } from '@/constants.js'
+
+let shuffle = array => {
   let i = array.length,
     temp,
     j
@@ -19,12 +21,14 @@ let shuffle = function(array) {
 
 let average = arr => arr.reduce((a, b) => a + b, 0) / arr.length
 
-let sum = arr => arr.reduce((a, b) => a + b, 0)
-
-let passWithout = (obj, key) => {
-  // eslint-disable-next-line no-unused-vars
-  const { [key]: deletedKey, ...otherKeys } = obj
-  return otherKeys
+let getFormedScore = unit => {
+  return (
+    (unit.att - ATT_MIN) * ATT_MULT[0] +
+    (unit.def - ATT_MIN) * ATT_MULT[1] +
+    (unit.com - ATT_MIN) * ATT_MULT[2] +
+    (unit.tac - ATT_MIN) * ATT_MULT[3] +
+    (unit.sta - ATT_MIN) * ATT_MULT[4]
+  )
 }
 
-export { shuffle, average, sum, passWithout }
+export { shuffle, average, getFormedScore }

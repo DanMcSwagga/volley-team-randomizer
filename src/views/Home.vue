@@ -5,9 +5,10 @@
     <hr />
 
     <h2>Выбери игроков (всего {{ playerNames.length }})</h2>
-    <h3>
-      Кол-во игроков за команду:
-      <input v-model.number="playerPerTeam" type="number" />
+    <h3 class="player-per-team-wrapper">
+      <span>Кол-во игроков за команду:</span>
+      <input v-model.number="playerPerTeam" type="range" min="3" max="6" />
+      <span>{{ playerPerTeam }}</span>
     </h3>
     <!-- PlayerSelect component -->
     <div class="player-select-wrapper">
@@ -26,13 +27,14 @@
       </div>
     </div>
 
+    <button @click="formTeams">Сформировать</button>
+
     <hr />
 
     <h2>Сформированные команды</h2>
     <span>
       <b>Точность: {{ lambda }}</b>
     </span>
-    <button @click="formTeams">Сформировать</button>
     <p>
       <i>
         Точность формулирования команд (1 отлично, 2-3 хорошо, 4+ плохо)
@@ -296,6 +298,14 @@ export default {
 <style lang="scss">
 button {
   margin: 10px 20px;
+}
+.player-per-team-wrapper {
+  display: flex;
+  justify-content: center;
+
+  span {
+    margin: 0 5px;
+  }
 }
 .player-select-wrapper {
   display: flex;

@@ -10,20 +10,18 @@ export default class Team {
   }
 
   removePlayer(position) {
-    let player = this.players.splice(position, 1)
+    let player = this.players.splice(position, 1)[0]
     this.removeScore(player.score)
     return player
   }
 
   removeFirstPlayer() {
-    // this.removePlayer(0)
     let player = this.players.unshift()
     this.removeScore(player.score)
     return player
   }
 
   removeLastPlayer() {
-    // this.removePlayer(this.players.length - 1)
     let player = this.players.pop()
     this.removeScore(player.score)
     return player

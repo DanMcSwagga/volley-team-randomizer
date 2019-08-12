@@ -6,11 +6,13 @@
 
     <h2>Выбери игроков (всего {{ playerNames.length }})</h2>
 
-    <div class="player-per-team-wrapper">
+    <div class="central-info-wrapper">
       <span>Кол-во игроков за команду:</span>
       <div>
+        <span>
+          <b>{{ playerPerTeam }}</b>
+        </span>
         <input v-model.number="playerPerTeam" type="range" min="3" max="6" />
-        <span>{{ playerPerTeam }}</span>
       </div>
     </div>
     <!-- PlayerSelect component -->
@@ -28,6 +30,12 @@
         />
         <label :for="playerName">{{ playerName }}</label>
       </div>
+    </div>
+
+    <div class="central-info-wrapper">
+      <span>
+        Выбрано <b>{{ checkedNames.length }}</b> игроков
+      </span>
     </div>
 
     <button class="form-teams-button" @click="formTeams">Сформировать</button>
@@ -350,17 +358,21 @@ export default {
 button {
   margin: 10px 20px;
 }
-.player-per-team-wrapper {
+.central-info-wrapper {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   margin: 10px 0;
   span {
+    min-width: 12px;
     margin: 0 5px;
   }
   div {
     display: flex;
     justify-content: center;
+  }
+  input {
+    margin: 0 5px;
   }
 }
 .player-select-wrapper {
@@ -421,7 +433,10 @@ button {
 @media (min-width: 320px) and (max-width: 480px) {
   .player-select {
     width: 100%;
-    padding: 8px 20px;
+    margin: 8px 0;
+    label {
+      width: 100%;
+    }
   }
 }
 .form-teams-button {

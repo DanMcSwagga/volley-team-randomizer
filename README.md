@@ -10,7 +10,7 @@ __________
 
 ## Table of Contents
 
-* [Demo](#demo)
+* [Demo/Site](#demo)
 * [Version](#version)
 * [Quick start](#quick-start)
 * [Supported Browsers](#supported-browsers)
@@ -18,8 +18,7 @@ __________
 
 # Demo
 
- <!-- - [Main demo](https://s08k3.codesandbox.io/) -->
- <b>Main demo</b> (currently unavailable)
+ [Demo/Site](https://hotvolley.netlify.com/)
 
 # Version
 

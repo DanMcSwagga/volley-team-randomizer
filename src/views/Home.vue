@@ -355,9 +355,6 @@ export default {
 </script>
 
 <style lang="scss">
-button {
-  margin: 10px 20px;
-}
 .central-info-wrapper {
   display: flex;
   justify-content: center;
@@ -429,19 +426,10 @@ button {
     outline: rgb(59, 153, 252) auto 5px;
   }
 }
-// Mobile media query
-@media (min-width: 320px) and (max-width: 480px) {
-  .player-select {
-    width: 100%;
-    margin: 8px 0;
-    label {
-      width: 100%;
-    }
-  }
-}
 .form-teams-button {
   line-height: 24px;
   padding: 10px 20px;
+  margin: 10px 20px;
   font-size: 16px;
   font-weight: 600;
   border: 1px solid #5e5e5e;
@@ -483,5 +471,23 @@ button {
 }
 .player-extra {
   background-color: red;
+}
+
+// Mobile media query
+@media (min-width: 320px) and (max-width: 480px) {
+  .player-select {
+    width: 100%;
+    margin: 8px 0;
+    label {
+      width: 100%;
+    }
+  }
+  .form-teams-button {
+    width: 100%;
+    margin: 10px 0;
+    padding: 20px 0;
+    border-right-width: 0px;
+    border-left-width: 0px;
+  }
 }
 </style>

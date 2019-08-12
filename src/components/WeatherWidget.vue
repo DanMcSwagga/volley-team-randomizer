@@ -39,9 +39,10 @@ export default {
 .weather-widget {
   display: flex;
   justify-content: center;
-
+  flex-wrap: wrap;
+  margin: 10px 0;
   span {
-    margin: 10px 5px;
+    margin: 2px 5px;
     text-transform: capitalize;
   }
 }

@@ -1,7 +1,7 @@
 import { getFormedScore } from './utils.js'
 
 export default class Player {
-  constructor(name, att, def, com, tac, sta, score = 0) {
+  constructor(name, att, def, com, tac, sta, score = 0, isExtra = false) {
     this.name = name
     this.att = att
     this.def = def
@@ -9,15 +9,12 @@ export default class Player {
     this.tac = tac
     this.sta = sta
     this.score = score
+    this.isExtra = isExtra
   }
 
   calculateScore() {
-    if (this.score && this.score !== 0) this.resetScore()
+    if (this.score && this.score !== 0) this.score = 0 // Reset
     this.score = getFormedScore(this)
-  }
-
-  resetScore() {
-    this.score = 0
   }
 
   toString() {

@@ -4,6 +4,10 @@ export default class Team {
     this.score = score
   }
 
+  getPlayerByName(name) {
+    return this.players.find(player => player.name === name)
+  }
+
   addPlayer(player) {
     this.players.push(player)
     this.addScore(player.score)

@@ -31,4 +31,9 @@ let getFormedScore = unit => {
   )
 }
 
-export { shuffle, average, getFormedScore }
+let getRandomColor = () => {
+  const rnd = () => Math.floor(Math.random() * 255)
+  return `rgba(${rnd()}, ${rnd()}, ${rnd()}, 0.3)`
+}
+
+export { shuffle, average, getFormedScore, getRandomColor }

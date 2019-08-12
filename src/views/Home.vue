@@ -26,11 +26,11 @@
           :value="playerName"
           v-model="checkedNames"
         />
-        <label for="playerName">{{ playerName }}</label>
+        <label :for="playerName">{{ playerName }}</label>
       </div>
     </div>
 
-    <button @click="formTeams">Сформировать</button>
+    <button class="form-teams-button" @click="formTeams">Сформировать</button>
 
     <hr />
 
@@ -56,6 +56,11 @@
           class="player"
           v-for="(player, pindex) in team.players"
           :key="`p${pindex}`"
+          :style="[
+            Boolean(player.isExtra)
+              ? { 'background-color': player.isExtra }
+              : { 'background-color': 'transparent' }
+          ]"
           v-html="DEV_MODE ? player.toString() : player.name"
         ></li>
       </ul>
@@ -71,7 +76,12 @@ import Team from '@/utils/Team.js'
 
 import dataJSON from '@/utils/data.json'
 import dummies from '@/utils/dummies.json'
-import { shuffle, average, getFormedScore } from '@/utils/utils.js'
+import {
+  shuffle,
+  average,
+  getFormedScore,
+  getRandomColor
+} from '@/utils/utils.js'
 import { DUMMY } from '@/constants.js'
 
 export default {
@@ -174,7 +184,12 @@ export default {
 
       let extraPlayerRemovalFlag = false // N-1th player check
 
-      players.forEach(player => player.calculateScore())
+      players.forEach(player => {
+        player.calculateScore()
+        if (Boolean(player.isExtra) == true) {
+          player.isExtra = false
+        }
+      })
 
       console.log('>> Average score = ' + scoreAverage)
 
@@ -223,10 +238,11 @@ export default {
       // Add extra, average players to finish forming teams
       if (playersCopy.length % this.playerPerTeam !== 0) {
         // Remove already assigned players from copy-array
-        playersCopy.splice(
-          playersCopy.length - teams[ti].players.length,
-          teams[ti].players.length
+        let assignedPlayers = [...teams[ti].players]
+        playersCopy = playersCopy.filter(
+          copy => !assignedPlayers.includes(copy)
         )
+
         // And shuffle them
         playersCopy = shuffle(playersCopy)
 
@@ -265,7 +281,12 @@ export default {
             }
           }
         }
+
+        // Discern extra players from regular ones
+        this.discernExtraPlayers(teams[ti].players, assignedPlayers)
       }
+
+      console.log(teams)
 
       this.teams = teams
       // or: this.$forceUpdate()
@@ -282,6 +303,15 @@ export default {
         return true
       }
       return false
+    },
+
+    discernExtraPlayers(extra, regular) {
+      extra.forEach(player => {
+        player.isExtra = getRandomColor()
+      })
+      regular.forEach(player => {
+        player.isExtra = false
+      })
     },
 
     teamDiff: (team, avg) => Math.abs(team.score / team.players.length - avg),
@@ -336,18 +366,87 @@ button {
 .player-select-wrapper {
   display: flex;
   flex-wrap: wrap;
-
   margin: 0 40px;
+  font-size: 14px;
 }
 .player-select {
   display: flex;
   flex-direction: row;
-
   width: fit-content;
-  padding: 8px;
-  margin: 6px;
+  // padding: 8px;
+  margin: 4px;
   border: 1px solid #5a5a5a;
+  line-height: 24px;
+  input[type='checkbox'] {
+    display: none;
+  }
+  label {
+    position: relative;
+    display: inline-block;
+    padding: 8px 8px 8px 30px;
+  }
+  label::before,
+  label::after {
+    position: absolute;
+    content: '';
+    display: inline-block;
+  }
+  label::before {
+    height: 16px;
+    width: 16px;
+    border: 1px solid;
+    left: 8px;
+    top: 11px;
+  }
+  label::after {
+    height: 5px;
+    width: 9px;
+    border-left: 2px solid;
+    border-bottom: 2px solid;
+    transform: rotate(-45deg);
+    left: 11px;
+    top: 15px;
+  }
+  input[type='checkbox'] + label::after {
+    content: none;
+  }
+  input[type='checkbox']:checked + label::after {
+    content: '';
+  }
+  input[type='checkbox']:focus + label::before {
+    outline: rgb(59, 153, 252) auto 5px;
+  }
 }
+// Mobile media query
+@media (min-width: 320px) and (max-width: 480px) {
+  .player-select {
+    width: 100%;
+    padding: 8px 20px;
+  }
+}
+.form-teams-button {
+  line-height: 24px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border: 1px solid #5e5e5e;
+  background-color: transparent;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(59, 153, 252, 0.7);
+    border-color: transparent;
+    color: white;
+  }
+  &:active {
+    background-color: rgba(59, 153, 252, 1);
+    border-color: transparent;
+    color: white;
+  }
+}
+
 .team-wrapper {
   display: flex;
   flex-direction: row;
@@ -356,14 +455,18 @@ button {
   width: 100%;
 }
 .team {
-  width: calc(50% - 80px);
-  margin: 20px;
-  padding: 0 20px;
+  width: calc(50% - 40px);
+  margin: 10px;
+  padding: 0 10px;
 
   list-style: inside;
 }
 .player {
   text-align: left;
   padding: 10px;
+  margin: 5px;
+}
+.player-extra {
+  background-color: red;
 }
 </style>

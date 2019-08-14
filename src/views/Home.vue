@@ -370,6 +370,7 @@ export default {
   }
   input {
     margin: 0 5px;
+    cursor: pointer;
   }
 }
 .player-select-wrapper {
@@ -382,9 +383,7 @@ export default {
   display: flex;
   flex-direction: row;
   width: fit-content;
-  // padding: 8px;
   margin: 4px;
-  border: 1px solid #5a5a5a;
   line-height: 24px;
   input[type='checkbox'] {
     display: none;
@@ -393,6 +392,9 @@ export default {
     position: relative;
     display: inline-block;
     padding: 8px 8px 8px 30px;
+    border: 1px solid #5a5a5a;
+    transition: all 0.2s;
+    cursor: pointer;
   }
   label::before,
   label::after {
@@ -416,6 +418,10 @@ export default {
     left: 11px;
     top: 15px;
   }
+  input[type='checkbox']:checked + label {
+    border: 1px solid rgba(59, 153, 252, 1);
+    color: rgba(59, 153, 252, 1);
+  }
   input[type='checkbox'] + label::after {
     content: none;
   }
@@ -431,9 +437,12 @@ export default {
   padding: 10px 20px;
   margin: 10px 20px;
   font-size: 16px;
+  text-transform: uppercase;
   font-weight: 600;
-  border: 1px solid #5e5e5e;
-  background-color: transparent;
+  border: 1px solid #999999;
+  // background-color: transparent;
+  background-color: #999999;
+  color: #ffffff;
   text-decoration: none;
   transition: all 0.2s;
   cursor: pointer;

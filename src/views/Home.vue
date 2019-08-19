@@ -33,12 +33,23 @@
     </div>
 
     <div class="central-info-wrapper">
+      <button class="smaller-button reset-button" @click="checkedNames = []">
+        Очистить всех
+      </button>
+      <button class="smaller-button" @click="checkedNames = [...playerNames]">
+        Выбрать всех
+      </button>
+    </div>
+
+    <div class="central-info-wrapper">
       <span>
         Выбрано <b>{{ checkedNames.length }}</b> игроков
       </span>
     </div>
 
-    <button class="form-teams-button" @click="formTeams">Сформировать</button>
+    <div class="central-info-wrapper">
+      <button class="form-teams-button" @click="formTeams">Сформировать</button>
+    </div>
 
     <hr />
 
@@ -432,32 +443,6 @@ export default {
     outline: rgb(59, 153, 252) auto 5px;
   }
 }
-.form-teams-button {
-  line-height: 24px;
-  padding: 10px 20px;
-  margin: 10px 20px;
-  font-size: 16px;
-  text-transform: uppercase;
-  font-weight: 600;
-  border: 1px solid #999999;
-  // background-color: transparent;
-  background-color: #999999;
-  color: #ffffff;
-  text-decoration: none;
-  transition: all 0.2s;
-  cursor: pointer;
-
-  &:hover {
-    background-color: rgba(59, 153, 252, 0.7);
-    border-color: transparent;
-    color: white;
-  }
-  &:active {
-    background-color: rgba(59, 153, 252, 1);
-    border-color: transparent;
-    color: white;
-  }
-}
 
 .team-wrapper {
   display: flex;
@@ -481,8 +466,23 @@ export default {
 .player-extra {
   background-color: red;
 }
+.smaller-button {
+  line-height: 20px;
+  padding: 11px 20px;
+  margin: 11px 20px;
+  font-size: 14px;
+}
+.reset-button {
+  background-color: #fd7f79;
+  &:hover {
+    background-color: #ff6961;
+  }
+  &:active {
+    background-color: #eb4f46;
+  }
+}
 
-// Mobile media query
+// Mobile media queries
 @media (min-width: 320px) and (max-width: 480px) {
   .player-select {
     width: 100%;

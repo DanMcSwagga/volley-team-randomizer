@@ -1,4 +1,4 @@
-const ATT_MIN = 4 // < than lowest attribute score
+const ATT_MIN = 2 // < than lowest attribute score
 const ATT_MULT = [4, 4, 1, 3, 2] // attribute multipliers
 
 const DUMMY = true // condition whether to include dummies

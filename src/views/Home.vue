@@ -59,7 +59,7 @@
     </span>
     <p>
       <i>
-        Точность формулирования команд (1 отлично, 2-3 хорошо, 4+ плохо)
+        Точность формулирования команд (1-2 идеально, 3-4 хорошо, 5+ плохо)
       </i>
     </p>
 
@@ -448,20 +448,19 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-
   width: 100%;
+  justify-content: space-between; //
 }
 .team {
-  width: calc(50% - 40px);
-  margin: 10px;
+  // width: calc(50% - 40px); //
+  margin: 10px 20px; //
   padding: 0 10px;
-
   list-style: inside;
 }
 .player {
   text-align: left;
   padding: 10px;
-  margin: 5px;
+  // margin: 5px; //
 }
 .player-extra {
   background-color: red;
@@ -497,6 +496,14 @@ export default {
     padding: 20px 0;
     border-right-width: 0px;
     border-left-width: 0px;
+  }
+  .team-wrapper {
+    justify-content: center;
+  }
+  .team {
+    width: 100%;
+    margin: 10px 40px;
+    padding: 0;
   }
 }
 </style>

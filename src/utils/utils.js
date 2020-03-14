@@ -1,6 +1,6 @@
 import { ATT_MIN, ATT_MULT } from '@/constants.js'
 
-let shuffle = array => {
+const shuffle = array => {
   let i = array.length,
     temp,
     j
@@ -19,9 +19,9 @@ let shuffle = array => {
   return array
 }
 
-let average = arr => arr.reduce((a, b) => a + b, 0) / arr.length
+const average = arr => arr.reduce((a, b) => a + b, 0) / arr.length
 
-let getFormedScore = unit => {
+const getFormedScore = unit => {
   return (
     (unit.att - ATT_MIN) * ATT_MULT[0] +
     (unit.def - ATT_MIN) * ATT_MULT[1] +
@@ -31,9 +31,24 @@ let getFormedScore = unit => {
   )
 }
 
-let getRandomColor = () => {
+const getRandomColor = () => {
   const rnd = () => Math.floor(Math.random() * 255)
   return `rgba(${rnd()}, ${rnd()}, ${rnd()}, 0.3)`
 }
 
-export { shuffle, average, getFormedScore, getRandomColor }
+// math helper...
+const valueToPoint = (value, index, total) => {
+  const x = 0
+  const y = -value * 0.8
+  const angle = ((Math.PI * 2) / total) * index
+  const cos = Math.cos(angle)
+  const sin = Math.sin(angle)
+  const tx = x * cos - y * sin + 100
+  const ty = x * sin + y * cos + 100
+  return {
+    x: tx,
+    y: ty
+  }
+}
+
+export { shuffle, average, getFormedScore, getRandomColor, valueToPoint }

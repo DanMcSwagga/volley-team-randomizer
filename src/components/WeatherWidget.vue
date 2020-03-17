@@ -3,10 +3,16 @@
     <div class="weather-widget" v-if="this.$store.state.dataIsRecived">
       <span class="weather-widget__date">{{ date }}</span>
       <span>|</span>
-      <span class="weather-widget__city">Хотяновка,</span>
+
+      <span class="weather-widget__city"
+        ><router-link to="/player/1">Хотяновка,</router-link></span
+      >
+
       <span class="weather-widget__temp">{{ weather.temp }}°C,</span>
       <span class="weather-widget__status">
-        {{ weather.weather.description }}
+        <router-link to="/players">
+          {{ weather.weather.description }}
+        </router-link>
       </span>
     </div>
     <div v-else class="weather-widget">
@@ -44,6 +50,13 @@ export default {
   span {
     margin: 2px 5px;
     text-transform: capitalize;
+  }
+  &__status,
+  &__city {
+    a {
+      color: #000;
+      text-decoration: none;
+    }
   }
 }
 </style>

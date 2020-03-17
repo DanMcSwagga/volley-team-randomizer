@@ -11,7 +11,12 @@
         <svg width="220" height="220">
           <g>
             <polygon :points="getPoints(pi)"></polygon>
-            <circle cx="100" cy="100" r="80"></circle>
+            <circle cx="100" cy="100" r="75"></circle>
+            <circle cx="100" cy="100" r="60"></circle>
+            <circle cx="100" cy="100" r="45"></circle>
+            <circle cx="100" cy="100" r="30"></circle>
+            <circle cx="100" cy="100" r="15"></circle>
+            <circle cx="100" cy="100" r="1"></circle>
             <axis-label
               v-for="(stat, index) in stats[pi]"
               :key="index"
@@ -90,7 +95,9 @@ export default {
           { label: 'sta', value: 100 }
         ]
 
-        this.stats[pi].forEach(st => (st.value = player[st.label] * 10))
+        this.stats[pi].forEach(st =>
+          (st.value = player[st.label] * 10).toFixed(2)
+        )
       })
     },
 
@@ -107,9 +114,6 @@ export default {
           )
         })
       }
-
-      console.log('Loaded players:')
-      console.dir(this.players)
     },
 
     goNext() {
@@ -133,7 +137,7 @@ polygon {
 
 circle {
   fill: transparent;
-  stroke: #999;
+  stroke: #ccc;
 }
 
 label {

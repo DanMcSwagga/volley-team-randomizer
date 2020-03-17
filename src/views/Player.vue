@@ -1,7 +1,6 @@
 <template>
   <div class="player">
-    <h1>Displaying player #{{ $route.params.id }}</h1>
-    <span v-html="currentPlayer"></span>
+    <h1>Игрок #{{ $route.params.id }}</h1>
 
     <button @click="setCurrentPlayer">Get Current</button>
     <button @click="goNext">Go Next</button>
@@ -99,9 +98,12 @@ export default {
       this.currentPlayer = this.players[this.$route.params.id]
 
       const setPlayerAttributeStat = st =>
-        (st.value = this.currentPlayer[st.label] * 10)
+        (st.value = (this.currentPlayer[st.label] * 10).toFixed(2))
 
       this.stats.forEach(setPlayerAttributeStat)
+
+      console.log(`${this.currentPlayer.name}:`)
+      console.log(this.currentPlayer.toString())
     },
 
     loadPlayers() {
@@ -117,12 +119,10 @@ export default {
           )
         })
       }
-
-      console.log('Loaded players:')
-      console.dir(this.players)
     },
 
     goNext() {
+      this.currentPlayer = null
       this.$router.push(
         `/player/${(+this.$route.params.id + 1) % this.players.length}`
       )

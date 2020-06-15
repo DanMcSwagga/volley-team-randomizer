@@ -3,6 +3,9 @@
     <h1>Игрок #{{ $route.params.id }}</h1>
 
     <button @click="setCurrentPlayer">Get Current</button>
+    <!-- <button @click="goBack" v-if="$route.params.id > 0">
+      Go Back
+    </button> -->
     <button @click="goNext">Go Next</button>
     <div v-if="currentPlayer">
       <hr />
@@ -22,38 +25,26 @@
           />
         </g>
       </svg>
-      <!-- controls -->
+      <!-- Controls -->
       <div v-for="(stat, index) in stats" :key="index">
         <label>{{ stat.label }}</label>
         <input type="range" v-model="stat.value" min="0" max="100" />
         <span>{{ stat.value }}</span>
       </div>
     </div>
-
-    <hr />
-
-    <!-- <h1>All players:</h1>
-
-    <div v-for="player in players" :key="player.name">
-      <span>{{ player.name }}</span>
-    </div> -->
   </div>
 </template>
 
 <script>
 import dataJSON from '@/utils/data.json'
-import { valueToPoint } from '@/utils/utils.js'
-
+import { valueToPoint, averages2d, configAttributes } from '@/utils/utils.js'
 import Player from '@/utils/Player.js'
 import AxisLabel from '@/components/AxisLabel.vue'
+import { ATTS } from '@/constants.js'
 
-const initialStats = [
-  { label: 'att', value: 100 },
-  { label: 'def', value: 100 },
-  { label: 'com', value: 100 },
-  { label: 'tac', value: 100 },
-  { label: 'sta', value: 100 }
-]
+const initialStats = ATTS.map(x => {
+  return { label: x, value: 100 }
+})
 
 export default {
   name: 'home',
@@ -98,12 +89,12 @@ export default {
       this.currentPlayer = this.players[this.$route.params.id]
 
       const setPlayerAttributeStat = st =>
-        (st.value = (this.currentPlayer[st.label] * 10).toFixed(2))
+        (st.value = this.currentPlayer.attributes[st.label].toFixed(2))
 
       this.stats.forEach(setPlayerAttributeStat)
 
-      console.log(`${this.currentPlayer.name}:`)
-      console.log(this.currentPlayer.toString())
+      // console.log(`${this.currentPlayer.name}:`)
+      // console.log(this.currentPlayer.toString())
     },
 
     loadPlayers() {
@@ -114,22 +105,32 @@ export default {
         let link = Object.values(record)[0]
 
         this.loadData(link, x => {
-          this.players.push(
-            new Player(name, ...x.data[x.data.length - 1].slice(1))
-          )
+          const cleanMatrix = x.data
+            .slice(1)
+            .map(row => row.slice(1).map(el => +el))
+
+          const averages = averages2d(cleanMatrix)
+
+          this.players.push(new Player(name, configAttributes(averages)))
         })
       }
     },
 
     goNext() {
       this.currentPlayer = null
+      // this.$router.push(`/player/${+this.$route.params.id + 1}`)
       this.$router.push(
         `/player/${(+this.$route.params.id + 1) % this.players.length}`
       )
+    },
+
+    goBack() {
+      this.currentPlayer = null
+      this.$router.push(`/player/${+this.$route.params.id - 1}`)
     }
   },
 
-  mounted() {
+  created() {
     this.loadPlayers()
   }
 }

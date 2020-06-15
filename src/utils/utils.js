@@ -1,4 +1,4 @@
-import { ATT_MIN, ATT_MULT } from '@/constants.js'
+import { ATT_MIN, ATT_MULT, ATTS } from '@/constants.js'
 
 const shuffle = array => {
   let i = array.length,
@@ -19,16 +19,56 @@ const shuffle = array => {
   return array
 }
 
+const normalizeArray = (array, upTo) => {
+  return array.map(x => (x * upTo) / array.reduce((curr, acc) => acc + curr))
+}
+
 const average = arr => arr.reduce((a, b) => a + b, 0) / arr.length
 
-const getFormedScore = unit => {
-  return (
-    (unit.att - ATT_MIN) * ATT_MULT[0] +
-    (unit.def - ATT_MIN) * ATT_MULT[1] +
-    (unit.com - ATT_MIN) * ATT_MULT[2] +
-    (unit.tac - ATT_MIN) * ATT_MULT[3] +
-    (unit.sta - ATT_MIN) * ATT_MULT[4]
-  )
+const averages2d = array2d => {
+  const sums = []
+  array2d.forEach(row => {
+    row.forEach((_, ri) => {
+      sums[ri] = sums[ri] ? sums[ri] + row[ri] : row[ri]
+    })
+  })
+  return sums.map(avg => avg / array2d.length)
+}
+
+const normalizePlayersAttributes = players => {
+  const normalized = players
+    .map(pl => pl.attributes)
+    .forEach(playersAtts => {
+      Object.keys(playersAtts).map(key => (playersAtts[key] /= 10))
+    })
+  return normalized
+}
+
+const getAllAverages = players => {
+  const playersAtts = players.map(pl => pl.attributes)
+  const averages = []
+
+  for (const playerIndex in playersAtts) {
+    for (const key in playersAtts[playerIndex]) {
+      const value = playersAtts[playerIndex][key]
+      averages[key] = averages[key] ? averages[key] + value : value
+    }
+  }
+
+  Object.keys(averages).map(key => (averages[key] /= playersAtts.length))
+  return averages
+}
+
+const getFormedScore = attributes => {
+  return Object.keys(attributes)
+    .map((key, i) => (attributes[key] - ATT_MIN) * ATT_MULT[i])
+    .reduce((acc, cur) => acc + cur)
+}
+
+const configAttributes = averages => {
+  return averages.reduce((acc, cur, i) => {
+    return { ...acc, [ATTS[i]]: cur }
+  }, {})
 }
 
 const getRandomColor = () => {
@@ -51,4 +91,15 @@ const valueToPoint = (value, index, total) => {
   }
 }
 
-export { shuffle, average, getFormedScore, getRandomColor, valueToPoint }
+export {
+  shuffle,
+  normalizeArray,
+  average,
+  getFormedScore,
+  getRandomColor,
+  valueToPoint,
+  configAttributes,
+  normalizePlayersAttributes,
+  getAllAverages,
+  averages2d
+}

@@ -43,7 +43,8 @@
 
     <div class="central-info-wrapper">
       <span>
-        Выбрано <b>{{ checkedNames.length }}</b> игроков
+        Выбрано
+        <b>{{ checkedNames.length }}</b> игроков
       </span>
     </div>
 
@@ -58,9 +59,10 @@
       <b>Точность: {{ lambda }}</b>
     </span>
     <p>
-      <i>
-        Точность формулирования команд (1-2 идеально, 3-4 хорошо, 5+ плохо)
-      </i>
+      <i
+        >Точность формулирования команд (10-20 идеально, 30-40 хорошо, 50+
+        плохо)</i
+      >
     </p>
 
     <div class="team-wrapper">
@@ -97,8 +99,10 @@ import dataJSON from '@/utils/data.json'
 import dummies from '@/utils/dummies.json'
 import {
   shuffle,
-  average,
   getFormedScore,
+  configAttributes,
+  averages2d,
+  getAllAverages,
   getRandomColor
 } from '@/utils/utils.js'
 import { DUMMY } from '@/constants.js'
@@ -115,9 +119,10 @@ export default {
     teams: [],
     checkedNames: [],
     playerPerTeam: 4,
-    lambda: 1, // allowance error
+    lambda: 10, // allowance error
+    lambdaStep: 5, // lambda increment per step
 
-    DEV_MODE: false // mode for development
+    DEV_MODE: true // mode for development
   }),
 
   computed: {
@@ -155,9 +160,19 @@ export default {
         let link = Object.values(record)[0]
 
         this.loadData(link, x => {
-          this.players.push(
-            new Player(name, ...x.data[x.data.length - 1].slice(1))
-          )
+          const cleanMatrix = x.data
+            .slice(1)
+            .map(row => row.slice(1).map(el => +el))
+
+          const averages = averages2d(cleanMatrix)
+
+          if (this.DEV_MODE) {
+            console.log(`>>> Player ${name}`)
+            // console.log(cleanMatrix)
+            console.log(averages.map(x => x.toFixed(0)).join(' - '))
+          }
+
+          this.players.push(new Player(name, configAttributes(averages)))
         })
       }
 
@@ -183,11 +198,12 @@ export default {
     },
 
     formTeams() {
+      console.clear()
       console.log('Forming teams...')
       if (!this.DEV_MODE && this.checkEmptyPlayers()) return
 
       // ~ Preparations ~
-      this.lambda = 1
+      this.lambda = 10 // reset lambda for consecutive generations
 
       let players = this.getCurrentPlayers(this.players)
       let playersCopy = [...players]
@@ -198,8 +214,14 @@ export default {
       let ti = 0, // team iterator
         pi = 0 // player iterator
 
-      let averages = this.getAllAverages(players)
-      let scoreAverage = getFormedScore(averages)
+      // const normalizedPlayers = normalizePlayersAttributes(players)
+      const averages = getAllAverages(players)
+      const scoreAverage = getFormedScore(averages)
+      if (this.DEV_MODE) {
+        console.log('>> Forming average score')
+        console.log(averages)
+        console.log(scoreAverage)
+      }
 
       let extraPlayerRemovalFlag = false // N-1th player check
 
@@ -209,8 +231,6 @@ export default {
           player.isExtra = false
         }
       })
-
-      console.log('>> Average score = ' + scoreAverage)
 
       // ~ Algorithm ~
       while (players.length !== 0) {
@@ -237,7 +257,7 @@ export default {
             if (pi === players.length) {
               // If already tried removing N-1th player from team...
               if (extraPlayerRemovalFlag) {
-                this.lambda += 1 // Increase lambda -- allowance error | *= 2
+                this.lambda += this.lambdaStep // Increase lambda -- allowance error
                 extraPlayerRemovalFlag = false // Reset N-1th player check
               } else {
                 players.unshift(teams[ti].removeLastPlayer()) // Remove N-1th player to end
@@ -284,7 +304,7 @@ export default {
               if (pi === playersCopy.length) {
                 // If already tried removing N-1th player from team...
                 if (extraPlayerRemovalFlag) {
-                  this.lambda += 1 // Increase lambda -- allowance error | *= 2
+                  this.lambda += this.lambdaStep // Increase lambda -- allowance error
                   extraPlayerRemovalFlag = false // Reset N-1th player check
                 } else {
                   playersCopy.unshift(teams[ti].removeLastPlayer()) // Remove N-1th player to end
@@ -334,25 +354,6 @@ export default {
     },
 
     teamDiff: (team, avg) => Math.abs(team.score / team.players.length - avg),
-
-    getAllAverages(players) {
-      // TODO: think of a way to utilize passWithout()
-      let averages = players.map(pl => [
-        Number.parseFloat(pl.att),
-        Number.parseFloat(pl.def),
-        Number.parseFloat(pl.com),
-        Number.parseFloat(pl.tac),
-        Number.parseFloat(pl.sta)
-      ])
-
-      return {
-        att: average(averages.map(arr => arr[0])),
-        def: average(averages.map(arr => arr[1])),
-        com: average(averages.map(arr => arr[2])),
-        tac: average(averages.map(arr => arr[3])),
-        sta: average(averages.map(arr => arr[4]))
-      }
-    },
 
     outputPlayers(players) {
       players.forEach(pl => console.log(pl.toString()))
@@ -460,6 +461,7 @@ export default {
 .player {
   text-align: left;
   padding: 10px;
+  list-style-type: circle;
   // margin: 5px; //
 }
 .player-extra {

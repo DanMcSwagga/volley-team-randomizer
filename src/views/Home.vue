@@ -122,7 +122,7 @@ export default {
     lambda: 10, // allowance error
     lambdaStep: 5, // lambda increment per step
 
-    DEV_MODE: true // mode for development
+    DEV_MODE: false // mode for development
   }),
 
   computed: {

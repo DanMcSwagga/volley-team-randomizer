@@ -11,12 +11,13 @@
         <svg width="220" height="220">
           <g>
             <polygon :points="getPoints(pi)"></polygon>
-            <circle cx="100" cy="100" r="75"></circle>
-            <circle cx="100" cy="100" r="60"></circle>
-            <circle cx="100" cy="100" r="45"></circle>
-            <circle cx="100" cy="100" r="30"></circle>
-            <circle cx="100" cy="100" r="15"></circle>
-            <circle cx="100" cy="100" r="1"></circle>
+            <circle
+              v-for="r in ['75', '60', '45', '30', '15', '1']"
+              cx="100"
+              cy="100"
+              :key="r + player.name"
+              :r="r"
+            ></circle>
             <axis-label
               v-for="(stat, index) in stats[pi]"
               :key="index"
@@ -38,10 +39,6 @@ import { averages2d, configAttributes, valueToPoint } from '@/utils/utils.js'
 import Player from '@/utils/Player.js'
 import AxisLabel from '@/components/AxisLabel.vue'
 import { ATTS } from '@/constants.js'
-
-const initialStats = ATTS.map(x => {
-  return { label: x, value: 100 }
-})
 
 export default {
   name: 'home',
@@ -82,10 +79,10 @@ export default {
     setPlayers() {
       this.stats = []
       this.players.forEach((player, pi) => {
-        this.stats[pi] = initialStats
+        this.stats[pi] = ATTS.map(x => ({ label: x, value: 100 }))
 
         this.stats[pi].forEach(st =>
-          (st.value = player[st.label] * 10).toFixed(2)
+          (st.value = player.attributes[st.label]).toFixed(2)
         )
       })
     },
@@ -103,20 +100,13 @@ export default {
             .map(row => row.slice(1).map(el => +el))
 
           const averages = averages2d(cleanMatrix)
-
           this.players.push(new Player(name, configAttributes(averages)))
         })
       }
-    },
-
-    goNext() {
-      this.$router.push(
-        `/player/${(+this.$route.params.id + 1) % this.players.length}`
-      )
     }
   },
 
-  mounted() {
+  created() {
     this.loadPlayers()
   }
 }

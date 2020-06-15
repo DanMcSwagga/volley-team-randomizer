@@ -14,12 +14,10 @@ export default class Player {
   }
 
   toString() {
-    return (
-      this.name +
-      ': ALL ' +
-      `<b> ${this.score.toFixed(2)} </b>` +
-      ' | attributes ' +
+    return `${this.name}, <b>${this.score.toFixed(2)}</b> | ${Object.entries(
       this.attributes
     )
+      .map(entry => entry[1].toFixed(0))
+      .join(' ')}`
   }
 }

@@ -17,15 +17,28 @@
     </div>
     <!-- PlayerSelect component -->
     <div class="player-select-wrapper">
-      <div class="player-select" v-for="playerName in playerNames" :key="playerName">
-        <input type="checkbox" :id="playerName" :value="playerName" v-model="checkedNames" />
+      <div
+        class="player-select"
+        v-for="playerName in playerNames"
+        :key="playerName"
+      >
+        <input
+          type="checkbox"
+          :id="playerName"
+          :value="playerName"
+          v-model="checkedNames"
+        />
         <label :for="playerName">{{ playerName }}</label>
       </div>
     </div>
 
     <div class="central-info-wrapper">
-      <button class="smaller-button reset-button" @click="checkedNames = []">Очистить всех</button>
-      <button class="smaller-button" @click="checkedNames = [...playerNames]">Выбрать всех</button>
+      <button class="smaller-button reset-button" @click="checkedNames = []">
+        Очистить всех
+      </button>
+      <button class="smaller-button" @click="checkedNames = [...playerNames]">
+        Выбрать всех
+      </button>
     </div>
 
     <div class="central-info-wrapper">
@@ -46,7 +59,10 @@
       <b>Точность: {{ lambda }}</b>
     </span>
     <p>
-      <i>Точность формулирования команд (1-2 идеально, 3-4 хорошо, 5+ плохо)</i>
+      <i
+        >Точность формулирования команд (10-20 идеально, 30-40 хорошо, 50+
+        плохо)</i
+      >
     </p>
 
     <div class="team-wrapper">
@@ -104,7 +120,7 @@ export default {
     checkedNames: [],
     playerPerTeam: 4,
     lambda: 10, // allowance error
-    lambdaStep: 10, // lambda increment per step
+    lambdaStep: 5, // lambda increment per step
 
     DEV_MODE: true // mode for development
   }),
@@ -153,7 +169,6 @@ export default {
           if (this.DEV_MODE) {
             console.log(`>>> Player ${name}`)
             // console.log(cleanMatrix)
-            // console.log(`averages:`)
             console.log(averages.map(x => x.toFixed(0)).join(' - '))
           }
 
@@ -188,7 +203,7 @@ export default {
       if (!this.DEV_MODE && this.checkEmptyPlayers()) return
 
       // ~ Preparations ~
-      this.lambda = 10
+      this.lambda = 10 // reset lambda for consecutive generations
 
       let players = this.getCurrentPlayers(this.players)
       let playersCopy = [...players]
@@ -199,12 +214,14 @@ export default {
       let ti = 0, // team iterator
         pi = 0 // player iterator
 
-      let averages = getAllAverages(players)
-      console.log('>>>> forming average attributes score')
-      console.log(averages)
-      let scoreAverage = getFormedScore(averages)
-      console.log('>>>> formed average attributes score')
-      console.log(scoreAverage)
+      // const normalizedPlayers = normalizePlayersAttributes(players)
+      const averages = getAllAverages(players)
+      const scoreAverage = getFormedScore(averages)
+      if (this.DEV_MODE) {
+        console.log('>> Forming average score')
+        console.log(averages)
+        console.log(scoreAverage)
+      }
 
       let extraPlayerRemovalFlag = false // N-1th player check
 
@@ -214,8 +231,6 @@ export default {
           player.isExtra = false
         }
       })
-
-      console.log('>> Average score = ' + scoreAverage)
 
       // ~ Algorithm ~
       while (players.length !== 0) {
@@ -446,6 +461,7 @@ export default {
 .player {
   text-align: left;
   padding: 10px;
+  list-style-type: circle;
   // margin: 5px; //
 }
 .player-extra {

@@ -19,6 +19,10 @@ const shuffle = array => {
   return array
 }
 
+const normalizeArray = (array, upTo) => {
+  return array.map(x => (x * upTo) / array.reduce((curr, acc) => acc + curr))
+}
+
 const average = arr => arr.reduce((a, b) => a + b, 0) / arr.length
 
 const averages2d = array2d => {
@@ -29,6 +33,15 @@ const averages2d = array2d => {
     })
   })
   return sums.map(avg => avg / array2d.length)
+}
+
+const normalizePlayersAttributes = players => {
+  const normalized = players
+    .map(pl => pl.attributes)
+    .forEach(playersAtts => {
+      Object.keys(playersAtts).map(key => (playersAtts[key] /= 10))
+    })
+  return normalized
 }
 
 const getAllAverages = players => {
@@ -42,8 +55,7 @@ const getAllAverages = players => {
     }
   }
 
-  Object.keys(averages).map(key => (averages[key] /= ATTS.length))
-  console.log(averages)
+  Object.keys(averages).map(key => (averages[key] /= playersAtts.length))
   return averages
 }
 
@@ -81,11 +93,13 @@ const valueToPoint = (value, index, total) => {
 
 export {
   shuffle,
+  normalizeArray,
   average,
   getFormedScore,
   getRandomColor,
   valueToPoint,
   configAttributes,
+  normalizePlayersAttributes,
   getAllAverages,
   averages2d
 }

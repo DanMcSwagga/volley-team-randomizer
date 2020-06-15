@@ -1,6 +1,6 @@
 const ATT_MIN = 1 // < than lowest attribute score
 
-// Normalize: ATT_MULT.map(x => (x * 100) / ATT_MULT.reduce((curr, acc) => acc + curr))
+// Normalize: arr.map(x => (x * 100) / arr.reduce((curr, acc) => acc + curr))
 const ATT_MULT = [
   1.2755102040816326,
   1.2755102040816326,

@@ -43,17 +43,13 @@
 <script>
 import dataJSON from '@/utils/data.json'
 import { valueToPoint } from '@/utils/utils.js'
-
 import Player from '@/utils/Player.js'
 import AxisLabel from '@/components/AxisLabel.vue'
+import { ATTS } from '@/constants.js'
 
-const initialStats = [
-  { label: 'att', value: 100 },
-  { label: 'def', value: 100 },
-  { label: 'com', value: 100 },
-  { label: 'tac', value: 100 },
-  { label: 'sta', value: 100 }
-]
+const initialStats = ATTS.map(x => {
+  return { label: x, value: 100 }
+})
 
 export default {
   name: 'home',

@@ -33,20 +33,15 @@
 
 <script>
 import dataJSON from '@/utils/data.json'
-import { valueToPoint } from '@/utils/utils.js'
+import { averages2d, configAttributes, valueToPoint } from '@/utils/utils.js'
 
 import Player from '@/utils/Player.js'
 import AxisLabel from '@/components/AxisLabel.vue'
+import { ATTS } from '@/constants.js'
 
-// const initialStats = [
-//   [
-//     { label: 'att', value: 100 },
-//     { label: 'def', value: 100 },
-//     { label: 'com', value: 100 },
-//     { label: 'tac', value: 100 },
-//     { label: 'sta', value: 100 }
-//   ]
-// ]
+const initialStats = ATTS.map(x => {
+  return { label: x, value: 100 }
+})
 
 export default {
   name: 'home',
@@ -87,13 +82,7 @@ export default {
     setPlayers() {
       this.stats = []
       this.players.forEach((player, pi) => {
-        this.stats[pi] = [
-          { label: 'att', value: 100 },
-          { label: 'def', value: 100 },
-          { label: 'com', value: 100 },
-          { label: 'tac', value: 100 },
-          { label: 'sta', value: 100 }
-        ]
+        this.stats[pi] = initialStats
 
         this.stats[pi].forEach(st =>
           (st.value = player[st.label] * 10).toFixed(2)
@@ -109,9 +98,13 @@ export default {
         let link = Object.values(record)[0]
 
         this.loadData(link, x => {
-          this.players.push(
-            new Player(name, ...x.data[x.data.length - 1].slice(1))
-          )
+          const cleanMatrix = x.data
+            .slice(1)
+            .map(row => row.slice(1).map(el => +el))
+
+          const averages = averages2d(cleanMatrix)
+
+          this.players.push(new Player(name, configAttributes(averages)))
         })
       }
     },

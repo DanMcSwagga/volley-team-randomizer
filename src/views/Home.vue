@@ -129,7 +129,7 @@ export default {
     playerNames: () => {
       let names = []
       for (let record of dataJSON) {
-        names.push(Object.keys(record)[0]) // adding actual players
+        names.push(Object.keys(record)[0]) // adding actual players' names
       }
       if (DUMMY)
         for (let dummy of dummies) {
@@ -141,12 +141,14 @@ export default {
 
   methods: {
     loadData(url, callback) {
+      console.log(url)
+
       this.$papa.parse(url, {
         download: true,
         skipEmptyLines: 'greedy',
         delimiter: ',',
         dynamicTyping: 'true',
-        complete: function(results) {
+        complete: results => {
           callback(results)
         }
       })
